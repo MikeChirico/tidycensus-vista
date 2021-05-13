@@ -52,6 +52,11 @@ vt2 %>%
             opacity = 1)
   
 
+vtfood <- get_acs(geography = "county", 
+                    variables = c(food_stamps = "B22001_001"),
+                    geometry = TRUE,
+                    year = 2018)
+
 
 
 
