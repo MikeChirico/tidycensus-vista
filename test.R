@@ -17,18 +17,40 @@ View(v17)
 age10 <- get_decennial(geography = "state", 
                        year = 2010)
 
-vt <- get_acs(geography = "county", 
+vt <- get_acs(geography = "zcta", 
               variables = c(medincome = "B19013_001", 
                             broadband = "B28002_004",
                             food_stamps = "B22001_001"), 
               state = "VT", 
               geometry = TRUE,
-              year = 2018)
+              year = 2019)
 
-vt2 <- get_acs(geography = "county", 
+
+
+vt2 <- get_acs(geography = "zcta", #geography = "county" will do by county
               variables = c(broadband = "B28002_004"),
+              state = "VT", 
               geometry = TRUE,
-              year = 2018)
+              year = 2019)
+  
+#creates color palette
+pal <- colorQuantile(palette = "viridis", domain = vt2$estimate, n = 10)
+
+vt2 %>%
+  #st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              color = ~ pal(estimate)) %>%
+  addLegend("bottomright", 
+            pal = pal, 
+            values = ~ estimate,
+            title = "Broadband percentiles",
+            opacity = 1)
+  
 
 
 
