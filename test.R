@@ -59,6 +59,49 @@ vtfood <- get_acs(geography = "county",
 
 
 
+windsor <- get_acs(state = "VT", county = "Windsor", geography = "tract", 
+                   variables = "B19013_001", geometry = TRUE)
+
+pal <- colorNumeric(palette = "viridis", 
+                    domain = windsor$estimate)
+
+windsor %>%
+    #st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal, 
+              values = ~ estimate,
+              title = "Household Income",
+              opacity = 1)
+
+
+vermont <- get_acs(state = "VT", geography = "tract", 
+                   variables = "B19013_001", geometry = TRUE)
+
+pal <- colorNumeric(palette = "plasma", 
+                    domain = vermont$estimate)
+
+vermont %>%
+    #st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal,
+              values = ~ estimate,
+              title = "Household Income",
+              opacity = 1)
+
 
 #B19058_001 food stamps
 #Percent of Households with Broadband Internet Subscription TableID: GCT2801 / 1	B28002_004
