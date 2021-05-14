@@ -112,7 +112,7 @@ vtbb %>%
 #SNAP Data
 
 vtSNAP <- get_acs(state = "VT", geography = "tract", 
-                   variables = "DP03_0074E", geometry = TRUE)
+                   variables = "DP03_0074PE", geometry = TRUE)
 
 #SNAP MAP
 
