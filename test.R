@@ -117,7 +117,7 @@ vtSNAP <- get_acs(state = "VT", geography = "tract",
 #SNAP MAP
 
 
-pal <- colorQuantile(palette = “plasma”, domain = vtSNAP$estimate, n = 10)
+pal <- colorQuantile(palette = "plasma", domain = vtSNAP$estimate, n = 10)
 
 vtSNAP %>%
     #st_transform(crs = "+init=epsg:4326") %>%
