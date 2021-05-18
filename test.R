@@ -73,6 +73,130 @@ toy <- spread(vt, variable, estimate) %>%
 
 
 
+windsor <- get_acs(state = "VT", county = "Windsor", geography = "tract", 
+                   variables = "B19013_001", geometry = TRUE)
+
+pal <- colorNumeric(palette = "viridis", 
+                    domain = windsor$estimate)
+
+windsor %>%
+    #st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal, 
+              values = ~ estimate,
+              title = "Household Income",
+              opacity = 1)
+
+
+#Maps by Rachael Below:
+
+#Broadband Data
+
+
+vtbb <- get_acs(state = "VT", geography = "tract", 
+                    variables = "B28002_004", geometry = TRUE)
+
+#Broadband Map
+
+pal <- colorQuantile(palette = "plasma", domain = vtbb$estimate, n = 10)
+
+
+vtbb %>%
+    #st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal,
+              values = ~ estimate,
+              title = "Broadband Sub.",
+              opacity = 1)
+
+#SNAP Data
+
+vtSNAP <- get_acs(state = "VT", geography = "tract", 
+                   variables = "DP03_0074PE", geometry = TRUE)
+
+#SNAP MAP
+
+
+pal <- colorQuantile(palette = "plasma", domain = vtSNAP$estimate, n = 10)
+
+vtSNAP %>%
+    #st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal,
+              values = ~ estimate,
+              title = "Perc. SNAP",
+              opacity = 1)
+
+#Cash Assitance Data
+
+vtassistanceblock <- get_acs(state = "VT", geography = "tract", 
+                   variables = "DP03_0072PE", geometry = TRUE)
+
+#Cash Assitance Map
+
+pal <- colorQuantile(palette = "plasma", domain = vtassistanceblock$estimate, n = 10)
+
+vtassistanceblock %>%
+    #st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal,
+              values = ~ estimate,
+              title = “Perc. w/ Cash Assistance”,
+              opacity = 1)
+
+#Median Income Data
+
+vtincome <- get_acs(state = "VT", geography = "tract", 
+                   variables = "B19013_001", geometry = TRUE)
+
+#Median Income Map
+
+pal <- colorNumeric(palette = "plasma", 
+                    domain = vtincome$estimate)
+
+vtincome %>%
+    #st_transform(crs = "+init=epsg:4326") %>%
+    leaflet(width = "100%") %>%
+    addProviderTiles(provider = "CartoDB.Positron") %>%
+    addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+                stroke = FALSE,
+                smoothFactor = 0,
+                fillOpacity = 0.7,
+                color = ~ pal(estimate)) %>%
+    addLegend("bottomright", 
+              pal = pal,
+              values = ~ estimate,
+              title = "Household Income",
+              opacity = 1)
+
 
 #B19058_001 food stamps
 #Percent of Households with Broadband Internet Subscription TableID: GCT2801 / 1	B28002_004
