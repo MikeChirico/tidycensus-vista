@@ -7,7 +7,7 @@ library(mapview)
 
 #api 5bc1aeed953e5cf836804a8bff7c0cd4f5059dd2
 
-census_api_key("5bc1aeed953e5cf836804a8bff7c0cd4f5059dd2", install = TRUE)
+#census_api_key("5bc1aeed953e5cf836804a8bff7c0cd4f5059dd2", install = TRUE)
 
 v17 <- load_variables(2017, "acs5", cache = TRUE)
 
@@ -18,9 +18,11 @@ age10 <- get_decennial(geography = "state",
                        year = 2010)
 
 vt <- get_acs(geography = "zcta", 
-              variables = c(medincome = "B19013_001", 
+              variables = c(med_income = "B19013_001", 
                             broadband = "B28002_004",
-                            food_stamps = "B22001_001"), 
+                            cash_assistance = "DP03_0072PE",
+                            food_stamps = "B22001_001",
+                            snap = "DP03_0074E"), 
               state = "VT", 
               geometry = TRUE,
               year = 2019)
@@ -56,6 +58,18 @@ vtfood <- get_acs(geography = "county",
                     variables = c(food_stamps = "B22001_001"),
                     geometry = TRUE,
                     year = 2018)
+
+
+toy <- spread(vt, variable, estimate) %>% 
+  select(-moe)  %>% 
+  gather(var, val, -c(GEOID, NAME, geometry), na.rm = TRUE) %>%
+  group_by(GEOID, NAME, var) %>%
+  distinct(val) %>%
+  spread(var, val)
+
+
+
+
 
 
 
