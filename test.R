@@ -3,6 +3,7 @@ library(tidyverse)
 library(tidycensus)
 library(leaflet)
 library(mapview)
+library(sf)
 
 
 #api 5bc1aeed953e5cf836804a8bff7c0cd4f5059dd2
@@ -39,7 +40,7 @@ vt2 <- get_acs(geography = "zcta", #geography = "county" will do by county
 pal <- colorQuantile(palette = "viridis", domain = vt2$estimate, n = 10)
 
 vt2 %>%
-  #st_transform(crs = "+init=epsg:4326") %>%
+  st_transform(crs = "+init=epsg:4326") %>%
   leaflet(width = "100%") %>%
   addProviderTiles(provider = "CartoDB.Positron") %>%
   addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
@@ -67,6 +68,22 @@ toy <- spread(vt, variable, estimate) %>%
   distinct(val) %>%
   spread(var, val)
 
+saveRDS(toy, "test_data.rds")
+
+toy %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              color = ~ pal(food_stamps)) %>%
+  addLegend("bottomright", 
+            pal = pal, 
+            values = ~ food_stamps,
+            title = "Broadband percentiles",
+            opacity = 1)
 
 
 
