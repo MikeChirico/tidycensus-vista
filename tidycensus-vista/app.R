@@ -15,24 +15,28 @@ library(mapview)
 
 {
     
-    # vt <- get_acs(geography = "zcta", 
-    #               variables = c(med_income = "B19013_001", 
-    #                             broadband = "B28002_004",
-    #                             cash_assistance = "DP03_0072PE",
-    #                             food_stamps = "B22001_001",
-    #                             snap = "DP03_0074E"), 
-    #               state = "VT", 
-    #               geometry = TRUE,
-    #               year = 2019)
+    vt <- get_acs(geography = "zcta",
+                  variables = c(med_income = "B19013_001",
+                                broadband = "B28002_004",
+                                cash_assistance = "DP03_0072PE",
+                                food_stamps = "B22001_001",
+                                snap = "DP03_0074PE"),
+                  state = "VT",
+                  geometry = TRUE,
+                  year = 2019)
     # 
-    # toy <- spread(vt, variable, estimate) %>% 
-    #     select(-moe)  %>% 
+    # toy <- spread(vt, variable, estimate) %>%
+    #     select(-moe)  %>%
     #     gather(var, val, -c(GEOID, NAME, geometry), na.rm = TRUE) %>%
     #     group_by(GEOID, NAME, var) %>%
     #     distinct(val) %>%
     #     spread(var, val)
-    
+    # 
+    # saveRDS(toy, "test_data.rds")
+    # saveRDS(vt, "test_data2.rds")
+    # 
     census_data <- readRDS("test_data.rds")
+    census_data2 <- readRDS("test_data2.rds")
 
 }
 
@@ -45,13 +49,29 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
+            radioButtons(
+                inputId = "map_filter",
+                label = "Select Data:",
+                choices = c(
+                    "Broadband" = 'broadband',
+                    "Food Stamps" = 'food_stamps',
+                    "Median Income" = 'med_income',
+                    "Cash Assistance" = 'DP03_0072P',
+                    "SNAP" = 'DP03_0074'
+                ),
+                selected = 'broadband',
+                inline = T
+            )
+            
     
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
-           leafletOutput("map")
-        )
+           leafletOutput("map"),
+           textOutput("test")
+        ),
+        
     )
 )
 
@@ -60,7 +80,8 @@ server <- function(input, output) {
 
     output$map <- renderLeaflet({
         
-        pal <- colorQuantile(palette = "viridis", domain = census_data$food_stamps, n = 10)
+        #pal <- colorQuantile(palette = "viridis", domain = census_data$input$map_filter, n = 10)
+        
         
         census_data %>%
             st_transform(crs = "+init=epsg:4326") %>%
@@ -69,14 +90,17 @@ server <- function(input, output) {
             addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
                         stroke = FALSE,
                         smoothFactor = 0,
-                        fillOpacity = 0.7,
-                        color = ~ pal(food_stamps)) %>%
+                        fillOpacity = 0.7#,
+                        #color = ~ pal(input$map_filter)
+                        ) %>%
             addLegend("bottomright", 
                       pal = pal, 
-                      values = ~ food_stamps,
-                      title = "Broadband percentiles",
+                      values = ~ .$input$map_filter,
+                      title = 'foo',
                       opacity = 1)
     })
+    
+    #output$test <- renderText({toString(input$map_filter)})
 }
 
 # Run the application 

@@ -186,7 +186,7 @@ vtassistanceblock %>%
     addLegend("bottomright", 
               pal = pal,
               values = ~ estimate,
-              title = “Perc. w/ Cash Assistance”,
+              title = "Perc. w Cash Assistance",
               opacity = 1)
 
 #Median Income Data
