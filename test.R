@@ -220,3 +220,103 @@ vtincome %>%
 #Percent of Households with Cash assistance GCT1904
 #Median Household Income GCT1901 / B19013_001
 #Percent of Households that receive food stamps/SNAP GCT2201 / 8	B22001_001
+
+
+
+######################
+#shiny map debugging
+
+cen_dat <- get_acs(geography = "zcta",
+                   variables = c(
+                     # med_income = "B19013_001",
+                     # broadband = "B28002_004",
+                     # cash_assistance = "DP03_0072PE",
+                     food_stamps = "B22001_001"),
+                     #snap = "DP03_0074PE"),
+                   state = "VT",
+                   geometry = TRUE,
+                   year = 2019)
+
+
+cen_dat$variable %>% unique()
+
+filtered_data <- cen_dat #%>% filter(variable == "DP03_0072P")
+
+#pal <- colorQuantile(palette = "viridis", domain = filtered_data$estimate, n = 7)
+
+quantileNum <- 5
+
+probs <- seq(0, 1, length.out = quantileNum + 1)
+bins <- quantile(cen_dat$estimate, probs, na.rm = TRUE, names = FALSE)
+
+while (length(unique(bins)) != length(bins)) {
+  quantileNum <- quantileNum - 1
+  probs <- seq(0, 1, length.out = quantileNum + 1)
+  bins <- quantile(cen_dat$estimate, probs, na.rm = TRUE, names = FALSE)
+}
+
+pal <- colorBin("YlGn", bins = bins)
+
+
+
+filtered_data %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(popup = ~ str_extract(NAME, "^([^,]*)"),
+              stroke = FALSE,
+              smoothFactor = 0,
+              fillOpacity = 0.7,
+              color = ~ pal(estimate)) %>%
+  addLegend("bottomright", 
+            pal = pal, 
+            values = ~ estimate,
+            title = 'foo',
+            opacity = 1)
+
+
+
+
+#Percent Households w/ Cash Assistance by STATE - zip & census tract
+#Median Household Income by STATE - zip & census tract
+#Percent of Households that receive food stamps/SNAP - zip & census tract
+# Percent Households w/ Broadband Internet Subscription by STATE - zip & census tract
+# Percent Households w/ Cash Assistance by STATE - zip & census tract
+# Median Household Income by STATE - zip & census tract
+# Percent of Households that receive food stamps/SNAP - zip & census tract
+
+
+
+
+
+
+ui <- fluidPage(
+  
+  # Application title
+  titlePanel("VISTA Map"),
+  
+  # Sidebar with a slider input for number of bins 
+           sidebarPanel(
+             radioButtons(
+               inputId = "map_filter",
+               label = "Select Data:",
+               choices = c(
+                 "Broadband" = 'broadband',
+                 "Food Stamps" = 'food_stamps',
+                 "Median Income" = 'med_income',
+                 "Cash Assistance" = 'DP03_0072P',
+                 "SNAP" = 'DP03_0074P'),
+               selected = 'broadband',
+               inline = T)
+           ),
+           
+           # Show a plot of the generated distribution
+           mainPanel(
+  
+  tabsetPanel(type = "tabs",
+              tabPanel("Map", plotOutput("map")),
+              tabPanel("Madlibs", textOutput("foobar")))
+           )
+)
+
+
