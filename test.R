@@ -1,6 +1,7 @@
 
 library(tidyverse)
 library(tidycensus)
+
 library(leaflet)
 library(mapview)
 library(sf)
@@ -318,5 +319,51 @@ ui <- fluidPage(
               tabPanel("Madlibs", textOutput("foobar")))
            )
 )
+
+
+
+
+#filters data based on input
+filtered_data <-
+  springfield %>% filter(variable == 'broadband') %>% 
+  filter(type == 'ZIP')
+
+
+#Creates color palette based on selected variable
+pal <-
+  colorQuantile(
+    palette = "viridis",
+    domain = filtered_data$variable,
+    n = 10
+  )
+
+
+#making the actual map
+filtered_data %>%
+  st_transform(crs = "+init=epsg:4326") %>%
+  leaflet(width = "100%") %>%
+  addProviderTiles(provider = "CartoDB.Positron") %>%
+  addPolygons(
+    popup = ~ str_extract(NAME, "^([^,]*)"),
+    stroke = FALSE,
+    smoothFactor = 0,
+    fillOpacity = 0.7,
+    color = ~ pal(estimate)
+  ) %>%
+  addLegend(
+    "bottomright",
+    pal = pal,
+    values = ~ estimate,
+    title = filtered_data$variable[1],
+    opacity = 1
+  )
+
+
+
+
+
+
+
+
 
 
