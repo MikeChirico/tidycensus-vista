@@ -205,7 +205,7 @@ ui <- fluidPage(# Application title
                         "Median Income" = 'med_income',
                         "Cash Assistance" = 'SSI'
                     ),
-                    selected = 'broadband',
+                    selected = 'SSI',
                     inline = F
                 ),
                 ####################################################################################
