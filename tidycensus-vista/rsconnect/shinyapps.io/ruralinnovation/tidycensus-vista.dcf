@@ -5,9 +5,9 @@ account: ruralinnovation
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4393659
-bundleId: 4838025
+bundleId: 4920627
 url: https://ruralinnovation.shinyapps.io/tidycensus-vista/
-when: 1626791756.51119
+when: 1628878223.83222
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: newformat.rds|test_data.rds|test_data2.rds|test_data3.rds

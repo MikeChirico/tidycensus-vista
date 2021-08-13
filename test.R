@@ -359,11 +359,44 @@ filtered_data %>%
   )
 
 
+get_zips <- function(state){
+  state_zip <- get_acs(
+    geography = "zcta",
+    output = 'wide',
+    variables = c(
+      pop = "B01003_001",
+      SSI = "B09010_001"
+    ),
+    state = state,
+    geometry = TRUE,
+    year = 2019
+  ) %>%
+    mutate(STATE = state) %>%
+    mutate(type = "ZIP")
+  
+  true_zips <- state_zip$NAME %>% str_sub(7, 11)
+  
+  state_zip$NAME <- true_zips
+  
+  return(state_zip)
+}
+all_zips <- rbind(get_zips("AR"),
+                  get_zips("MI"),
+                  get_zips("NM"),
+                  get_zips("OH"),
+                  get_zips("OR"),
+                  get_zips("VT"))
 
 
+import_zips <- tibble(state = all_zips$STATE, 
+                     ZIP = all_zips$NAME, 
+                     Population = all_zips$popE,
+                     SSI = all_zips$SSIE) %>% 
+                mutate(`Proportion on SSI` = round((SSI / Population), digits = 2)) %>% 
+  select(-state)
+  
 
-
-
+saveRDS(import_zips,"small_zip_prop.rds")
 
 
 
